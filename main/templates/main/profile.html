@@ -1,0 +1,49 @@
+{% extends 'layout/basic.html' %}
+
+{% load thumbnail %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %} Профиль пользователя {% endblock %}
+
+{% block content %}
+<h2>Профиль пользователя {{ user.username }}</h2>
+{% if user.first_name and user.last_name %}
+<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}</p>
+{% else %}
+<p>Здравствуйте!</p>
+{% endif %}
+<h3>Добавленные вами позиции</h3>
+{% if ess %}
+<div class="vstack gap-3 my-4">
+    {% for es in ess %}
+    <div class="card">
+        {% url 'main:es_detail' rubric_pk=rubric.pk pk=es.pk as url %}
+        <div class="row p-3">
+            <a class="col-md-2" href="{{ url }}{{ all }}">
+                {% if es.image %}
+                <img class="img-fluid" src="{% thumbnail es.image 'default' %}">
+                {% else %}
+                <img class="img-fluid" src="{% static 'main/empty.jpg' %}">
+                {% endif %}
+            </a>
+            <div class="col-md-10 card-body">
+                <h3 class="card-title"><a href="{{ url }}{{ all }}">
+                    {{ es.title }}</a></h3>
+                <div class="card-text mb-2">{{ es.content }}</div>
+                <p class="card-text fw-bold">{{ es.price }} руб.</p>
+                <p class="card-text text-end fst-italic">
+                    {{ es.created_at }}</p>
+                <p class="card-text text-end">
+                    <a href="{% url 'main:profile_es_edit' pk=es.pk %}">Исправить</a>
+                    <a href="{% url 'main:profile_es_delete' pk=es.pk %}">Удалить</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<p><a href="{% url 'main:profile_es_add' %}">Добавить позицию</a> </p>
+
+{% endblock %}
